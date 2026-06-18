@@ -1,0 +1,23 @@
+# Dependencias
+node_modules/
+
+# Build
+dist/
+dist-ssr/
+*.local
+
+# Entorno y secretos — NUNCA commitear
+.env
+.env.*
+!.env.example
+.mcp.json
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*

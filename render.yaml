@@ -1,0 +1,43 @@
+# =====================================================================================
+#  PrivvaClub — Render Blueprint (Static Site / PWA)
+#
+#  Despliega la PWA (Vite build -> ./dist) como sitio estático en Render.
+#  Las variables VITE_* se inyectan en BUILD time (Vite las "hornea" en el bundle),
+#  por eso van como envVars con sync:false: Render te las pedirá en el dashboard y
+#  NO quedan en el repo. Usa SOLO la anon key (pública); nunca la service_role.
+#
+#  Uso: sube este archivo al repo -> Render -> New + -> Blueprint -> selecciona el repo.
+# =====================================================================================
+services:
+  - type: web
+    name: privvaclub
+    runtime: static
+    # Build de la PWA. (Usa npm ci si commiteas package-lock.json.)
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    # Previews automáticas en cada Pull Request.
+    pullRequestPreviewsEnabled: true
+
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: VITE_SUPABASE_URL
+        sync: false # se define en el dashboard de Render
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false # anon public key (NO la service_role)
+
+    # SPA / PWA: cualquier ruta no encontrada cae en index.html (deep links, refresh).
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+    # El Service Worker no debe cachearse, para que las actualizaciones (autoUpdate)
+    # se propaguen de inmediato. El resto de assets ya van con hash de Vite.
+    headers:
+      - path: /sw.js
+        name: Cache-Control
+        value: "no-cache, no-store, must-revalidate"
+      - path: /manifest.webmanifest
+        name: Cache-Control
+        value: "no-cache"
