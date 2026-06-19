@@ -8,10 +8,11 @@
 //  El historial de transacciones se lista debajo.
 // =====================================================================================
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useAdvertiserProfile } from "../hooks/useAdvertiserProfile";
 import { supabase } from "../lib/supabaseClient";
 import AuthForm from "../components/AuthForm";
+import ProfileEditor from "../components/ProfileEditor";
 import MyAds from "./MyAds";
 import AdvertiserInbox from "../components/AdvertiserInbox";
 import type { BillingModel } from "../types/supabase";
@@ -28,6 +29,8 @@ export default function MyAccount({ userId }: MyAccountProps) {
     if (!profile?.subscription_expires_at) return false;
     return new Date(profile.subscription_expires_at).getTime() > Date.now();
   }, [profile?.subscription_expires_at]);
+
+  const [showEditor, setShowEditor] = useState(false);
 
   // Sin sesión: pintamos el formulario de acceso elegante.
   if (!userId) {
@@ -58,15 +61,51 @@ export default function MyAccount({ userId }: MyAccountProps) {
         </button>
       </div>
 
-      {/* Estado de cuenta */}
-      <div className="card">
-        <div className="card-title">{profile.username ?? "Anunciante"}</div>
-        <div className="muted">
-          Estado:{" "}
-          <span className={`status-pill status-${profile.account_status}`}>
-            {profile.account_status}
-          </span>
+      {/* Bienvenida de baja fricción para cuentas recién creadas. */}
+      {profile.account_status === "pending_review" && (
+        <div className="welcome-banner">
+          <strong>¡Bienvenido/a a PrivvaClub! 👋</strong>
+          <p className="muted">
+            Tu cuenta ya está activa para explorar. Personaliza tu perfil y prepara tus
+            anuncios; la <em>verificación de identidad</em> es opcional y la haremos más
+            adelante para destacar tu perfil.
+          </p>
         </div>
+      )}
+
+      {/* Tarjeta de perfil con avatar + bio. */}
+      <div className="card profile-card">
+        <div className="profile-head">
+          <div className="profile-avatar sm">
+            {profile.avatar_url ? <img src={profile.avatar_url} alt="Avatar" /> : <span>👤</span>}
+          </div>
+          <div className="profile-meta">
+            <div className="card-title">{profile.username ?? "Anunciante"}</div>
+            <div className="muted">
+              Estado:{" "}
+              <span className={`status-pill status-${profile.account_status}`}>
+                {profile.account_status === "pending_review" ? "explorando" : profile.account_status}
+              </span>
+            </div>
+          </div>
+          <button className="logout-btn" onClick={() => setShowEditor((s) => !s)}>
+            {showEditor ? "Cerrar" : "Editar perfil"}
+          </button>
+        </div>
+
+        {profile.bio && !showEditor && <p className="profile-bio">{profile.bio}</p>}
+
+        {showEditor && (
+          <div style={{ marginTop: 14 }}>
+            <ProfileEditor
+              profile={profile}
+              onSaved={() => {
+                void refresh();
+                setShowEditor(false);
+              }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Selector de modelo de monetización */}

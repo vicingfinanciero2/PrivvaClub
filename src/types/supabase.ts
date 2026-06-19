@@ -47,6 +47,8 @@ export type Database = {
         Row: {
           id: string;
           username: string | null;
+          avatar_url: string | null;
+          bio: string | null;
           credit_balance: number;
           account_status: Database["public"]["Enums"]["account_status_t"];
           billing_model: Database["public"]["Enums"]["billing_model_t"];
@@ -57,6 +59,8 @@ export type Database = {
         Insert: {
           id: string;
           username?: string | null;
+          avatar_url?: string | null;
+          bio?: string | null;
           credit_balance?: number;
           account_status?: Database["public"]["Enums"]["account_status_t"];
           billing_model?: Database["public"]["Enums"]["billing_model_t"];
@@ -67,6 +71,8 @@ export type Database = {
         Update: {
           id?: string;
           username?: string | null;
+          avatar_url?: string | null;
+          bio?: string | null;
           credit_balance?: number;
           account_status?: Database["public"]["Enums"]["account_status_t"];
           billing_model?: Database["public"]["Enums"]["billing_model_t"];

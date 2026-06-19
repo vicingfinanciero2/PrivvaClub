@@ -1007,3 +1007,66 @@ a {
   border: 1px solid var(--color-danger);
   color: var(--color-danger);
 }
+
+/* ===================================================================================
+   Perfil del ofertante (welcome + avatar + editor)
+   =================================================================================== */
+.welcome-banner {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.12), rgba(240, 217, 140, 0.06));
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.welcome-banner strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.profile-card .profile-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.profile-meta {
+  flex: 1;
+  min-width: 0;
+}
+.profile-bio {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--color-text);
+  white-space: pre-wrap;
+}
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  overflow: hidden;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.profile-avatar.sm {
+  width: 52px;
+  height: 52px;
+  font-size: 22px;
+  cursor: default;
+}
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.profile-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
