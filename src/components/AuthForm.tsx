@@ -21,8 +21,31 @@ export default function AuthForm() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
+  /** Reglas de contraseña robusta (solo en registro). */
+  function validatePassword(pwd: string): string | null {
+    if (pwd.length < 8) return "La contraseña debe tener al menos 8 caracteres.";
+    if (!/[A-Z]/.test(pwd)) return "Debe incluir al menos una mayúscula.";
+    if (!/[a-z]/.test(pwd)) return "Debe incluir al menos una minúscula.";
+    if (!/[0-9]/.test(pwd)) return "Debe incluir al menos un número.";
+    return null;
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+
+    // Validaciones de registro antes de llamar a Supabase.
+    if (mode === "signup") {
+      if (username.trim().length < 3) {
+        setError("El nombre de usuario debe tener al menos 3 caracteres.");
+        return;
+      }
+      const pwdError = validatePassword(password);
+      if (pwdError) {
+        setError(pwdError);
+        return;
+      }
+    }
+
     setLoading(true);
     setError(null);
     setNotice(null);
@@ -87,6 +110,8 @@ export default function AuthForm() {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="tu_alias"
                 autoComplete="username"
+                minLength={3}
+                required
               />
             </label>
           )}
@@ -111,9 +136,14 @@ export default function AuthForm() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               autoComplete={mode === "login" ? "current-password" : "new-password"}
-              minLength={6}
+              minLength={mode === "signup" ? 8 : 6}
               required
             />
+            {mode === "signup" && (
+              <span className="muted" style={{ fontSize: 12 }}>
+                Mínimo 8 caracteres, con mayúscula, minúscula y número.
+              </span>
+            )}
           </label>
 
           {error && <div className="auth-error">{error}</div>}
