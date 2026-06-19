@@ -32,12 +32,46 @@ services:
         source: /*
         destination: /index.html
 
-    # El Service Worker no debe cachearse, para que las actualizaciones (autoUpdate)
-    # se propaguen de inmediato. El resto de assets ya van con hash de Vite.
     headers:
+      # --- Caché ---
+      # El Service Worker no debe cachearse, para que las actualizaciones (autoUpdate)
+      # se propaguen de inmediato. El resto de assets ya van con hash de Vite.
       - path: /sw.js
         name: Cache-Control
         value: "no-cache, no-store, must-revalidate"
       - path: /manifest.webmanifest
         name: Cache-Control
         value: "no-cache"
+
+      # --- Seguridad (aplican a todas las rutas) ---
+      # CSP afinada: permite Supabase REST (https) + Realtime (wss), imágenes de Storage
+      # y Unsplash, el Service Worker (worker-src) y estilos inline de React.
+      - path: /*
+        name: Content-Security-Policy
+        value: >-
+          default-src 'self';
+          script-src 'self';
+          style-src 'self' 'unsafe-inline';
+          img-src 'self' data: blob: https://images.unsplash.com https://oswwnwvslksonmfizvso.supabase.co;
+          font-src 'self';
+          connect-src 'self' https://oswwnwvslksonmfizvso.supabase.co wss://oswwnwvslksonmfizvso.supabase.co;
+          worker-src 'self';
+          manifest-src 'self';
+          base-uri 'self';
+          form-action 'self';
+          frame-ancestors 'none'
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+      - path: /*
+        name: Strict-Transport-Security
+        value: "max-age=31536000; includeSubDomains"
