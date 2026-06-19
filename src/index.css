@@ -1070,3 +1070,128 @@ a {
   align-items: center;
   gap: 14px;
 }
+
+/* ===================================================================================
+   CreatorCta + Wizard KYC
+   =================================================================================== */
+.creator-cta {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.14), rgba(240, 217, 140, 0.05));
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.creator-cta strong {
+  display: block;
+  margin-bottom: 4px;
+}
+.creator-cta .auth-submit {
+  margin-top: 12px;
+}
+.creator-cta.in-review {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+.creator-cta.approved {
+  border-color: var(--color-success);
+  background: rgba(70, 177, 123, 0.08);
+}
+
+.kyc-window {
+  height: 88vh;
+}
+.kyc-progress {
+  height: 4px;
+  background: var(--color-surface-2);
+}
+.kyc-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-soft));
+  transition: width 0.25s ease;
+}
+.kyc-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 16px;
+}
+.kyc-step {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.kyc-label {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+.kyc-tips {
+  background: var(--color-surface-2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.kyc-preview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #000;
+}
+.kyc-review {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  margin: 10px 0;
+}
+.kyc-actions {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--color-border);
+}
+.kyc-actions .auth-submit {
+  flex: 1;
+}
+
+/* Cámara */
+.camera {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+.camera-frame {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 3 / 4;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+}
+.camera-frame video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.camera-guide {
+  position: absolute;
+  inset: 16% 18%;
+  border: 2px dashed rgba(212, 175, 55, 0.7);
+  border-radius: 50%;
+}
+.camera-shot {
+  width: 100%;
+  max-width: 320px;
+  border-radius: 14px;
+}
+.camera-fallback {
+  font-size: 14px;
+}

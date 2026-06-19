@@ -83,6 +83,92 @@ export type Database = {
         Relationships: [];
       };
 
+      creator_applications: {
+        Row: {
+          id: string;
+          profile_id: string;
+          status: Database["public"]["Enums"]["creator_app_status"];
+          full_name: string | null;
+          birth_date: string | null;
+          doc_type: string | null;
+          doc_number: string | null;
+          doc_front_path: string | null;
+          doc_back_path: string | null;
+          selfie_path: string | null;
+          selfie_with_doc_path: string | null;
+          bank_name: string | null;
+          bank_account_type: string | null;
+          bank_account_number: string | null;
+          social_instagram: string | null;
+          social_tiktok: string | null;
+          social_x: string | null;
+          submitted_at: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          rejection_reason: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          profile_id: string;
+          status?: Database["public"]["Enums"]["creator_app_status"];
+          full_name?: string | null;
+          birth_date?: string | null;
+          doc_type?: string | null;
+          doc_number?: string | null;
+          doc_front_path?: string | null;
+          doc_back_path?: string | null;
+          selfie_path?: string | null;
+          selfie_with_doc_path?: string | null;
+          bank_name?: string | null;
+          bank_account_type?: string | null;
+          bank_account_number?: string | null;
+          social_instagram?: string | null;
+          social_tiktok?: string | null;
+          social_x?: string | null;
+          submitted_at?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          rejection_reason?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          profile_id?: string;
+          status?: Database["public"]["Enums"]["creator_app_status"];
+          full_name?: string | null;
+          birth_date?: string | null;
+          doc_type?: string | null;
+          doc_number?: string | null;
+          doc_front_path?: string | null;
+          doc_back_path?: string | null;
+          selfie_path?: string | null;
+          selfie_with_doc_path?: string | null;
+          bank_name?: string | null;
+          bank_account_type?: string | null;
+          bank_account_number?: string | null;
+          social_instagram?: string | null;
+          social_tiktok?: string | null;
+          social_x?: string | null;
+          submitted_at?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          rejection_reason?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "creator_applications_profile_id_fkey";
+            columns: ["profile_id"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+
       subscription_events: {
         Row: {
           id: string;
@@ -362,6 +448,10 @@ export type Database = {
         Args: { p_profile_id: string };
         Returns: boolean;
       };
+      fn_submit_creator_application: {
+        Args: Record<PropertyKey, never>;
+        Returns: Database["public"]["Enums"]["creator_app_status"];
+      };
 
       // ---- Solo servidor (service_role) — NO invocar desde el cliente ------------
       fn_deposit_credits_by_admin: {
@@ -388,6 +478,7 @@ export type Database = {
       transaction_type_t: "deposit" | "ad_publish" | "ad_bump";
       sender_type_t: "advertiser" | "client";
       billing_model_t: "credits" | "subscription";
+      creator_app_status: "draft" | "submitted" | "in_review" | "approved" | "rejected";
     };
 
     CompositeTypes: Record<never, never>;
@@ -426,3 +517,5 @@ export type TransactionType = Enums<"transaction_type_t">;
 export type SenderType = Enums<"sender_type_t">;
 export type BillingModel = Enums<"billing_model_t">;
 export type SubscriptionEvent = Tables<"subscription_events">;
+export type CreatorApplication = Tables<"creator_applications">;
+export type CreatorAppStatus = Enums<"creator_app_status">;

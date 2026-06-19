@@ -13,6 +13,7 @@ import { useAdvertiserProfile } from "../hooks/useAdvertiserProfile";
 import { supabase } from "../lib/supabaseClient";
 import AuthForm from "../components/AuthForm";
 import ProfileEditor from "../components/ProfileEditor";
+import CreatorCta from "../components/CreatorCta";
 import MyAds from "./MyAds";
 import AdvertiserInbox from "../components/AdvertiserInbox";
 import type { BillingModel } from "../types/supabase";
@@ -107,6 +108,9 @@ export default function MyAccount({ userId }: MyAccountProps) {
           </div>
         )}
       </div>
+
+      {/* Convertirse en creador(a) — verificación KYC (aparece según estado). */}
+      <CreatorCta userId={userId} />
 
       {/* Selector de modelo de monetización */}
       <div className="section-title">Modelo de monetización</div>
