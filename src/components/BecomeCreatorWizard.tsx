@@ -21,12 +21,17 @@ interface BecomeCreatorWizardProps {
 
 const STEPS = ["Personal", "Documento", "Selfie", "Banca", "Redes"] as const;
 
-// --- Captura local de una foto (blob + preview) ---
+// --- Captura local de un archivo (blob + preview) ---
 interface Shot {
   blob: Blob;
   url: string;
   ext: string;
+  name: string;
+  isImage: boolean;
 }
+
+const MAX_FILE_MB = 10;
+const ACCEPTED_DOC = "image/jpeg,image/png,image/webp,image/heic,application/pdf";
 
 function PhotoTips({ items }: { items: string[] }) {
   return (
@@ -35,6 +40,22 @@ function PhotoTips({ items }: { items: string[] }) {
         <li key={t}>✓ {t}</li>
       ))}
     </ul>
+  );
+}
+
+// Vista previa con opción de quitar (imagen o chip de documento).
+function FilePreview({ shot, onRemove }: { shot: Shot; onRemove: () => void }) {
+  return (
+    <div className="kyc-file">
+      {shot.isImage ? (
+        <img className="kyc-preview" src={shot.url} alt="Vista previa" />
+      ) : (
+        <div className="kyc-doc-chip">📄 {shot.name}</div>
+      )}
+      <button type="button" className="kyc-remove" onClick={onRemove}>
+        ✕ Quitar
+      </button>
+    </div>
   );
 }
 
@@ -67,8 +88,23 @@ export default function BecomeCreatorWizard({ userId, onClose, onSubmitted }: Be
 
   function fileToShot(f: File | null, set: (s: Shot | null) => void) {
     if (!f) return set(null);
+    if (f.size > MAX_FILE_MB * 1024 * 1024) {
+      setError(`El archivo supera ${MAX_FILE_MB} MB. Usa uno más liviano.`);
+      return;
+    }
+    setError(null);
     const ext = f.name.split(".").pop()?.toLowerCase() || "jpg";
-    set({ blob: f, url: URL.createObjectURL(f), ext });
+    set({
+      blob: f,
+      url: URL.createObjectURL(f),
+      ext,
+      name: f.name,
+      isImage: f.type.startsWith("image/"),
+    });
+  }
+
+  function shotFromCapture(blob: Blob, url: string): Shot {
+    return { blob, url, ext: "jpg", name: "captura.jpg", isImage: true };
   }
 
   function validateStep(): string | null {
@@ -200,28 +236,41 @@ export default function BecomeCreatorWizard({ userId, onClose, onSubmitted }: Be
                 <div className="kyc-step">
                   <p className="muted">Sube tu documento oficial.</p>
                   <PhotoTips items={["Buena iluminación", "Sin reflejos ni brillos", "Que se lea todo el texto", "Sin recortes"]} />
+                  <div className="kyc-formats">Formatos: JPG, PNG, WEBP o PDF · máx {MAX_FILE_MB} MB</div>
+
                   <label className="auth-field"><span>Frente del documento *</span>
-                    <input type="file" accept="image/*" capture="environment" onChange={(e) => fileToShot(e.target.files?.[0] ?? null, setDocFront)} />
+                    {!docFront && (
+                      <input type="file" accept={ACCEPTED_DOC} onChange={(e) => fileToShot(e.target.files?.[0] ?? null, setDocFront)} />
+                    )}
                   </label>
-                  {docFront && <img className="kyc-preview" src={docFront.url} alt="Frente" />}
+                  {docFront && <FilePreview shot={docFront} onRemove={() => setDocFront(null)} />}
+
                   <label className="auth-field"><span>Reverso (opcional)</span>
-                    <input type="file" accept="image/*" capture="environment" onChange={(e) => fileToShot(e.target.files?.[0] ?? null, setDocBack)} />
+                    {!docBack && (
+                      <input type="file" accept={ACCEPTED_DOC} onChange={(e) => fileToShot(e.target.files?.[0] ?? null, setDocBack)} />
+                    )}
                   </label>
-                  {docBack && <img className="kyc-preview" src={docBack.url} alt="Reverso" />}
+                  {docBack && <FilePreview shot={docBack} onRemove={() => setDocBack(null)} />}
                 </div>
               )}
 
               {/* Paso 3 — Selfie */}
               {step === 2 && (
                 <div className="kyc-step">
-                  <p className="muted">Verifiquemos que eres tú.</p>
+                  <p className="muted">Verifiquemos que eres tú. Permite el acceso a la cámara cuando el navegador lo pida.</p>
                   <PhotoTips items={["Rostro centrado y visible", "Sin gorra ni gafas oscuras", "Buena luz, sin contraluz"]} />
                   <div className="kyc-label">Selfie *</div>
-                  {selfie ? <img className="kyc-preview" src={selfie.url} alt="Selfie" /> : null}
-                  <CameraCapture facing="user" onCapture={(blob, url) => setSelfie({ blob, url, ext: "jpg" })} />
+                  <CameraCapture
+                    facing="user"
+                    onCapture={(blob, url) => setSelfie(shotFromCapture(blob, url))}
+                    onClear={() => setSelfie(null)}
+                  />
                   <div className="kyc-label">Sosteniendo tu documento *</div>
-                  {selfieDoc ? <img className="kyc-preview" src={selfieDoc.url} alt="Selfie con documento" /> : null}
-                  <CameraCapture facing="user" onCapture={(blob, url) => setSelfieDoc({ blob, url, ext: "jpg" })} />
+                  <CameraCapture
+                    facing="user"
+                    onCapture={(blob, url) => setSelfieDoc(shotFromCapture(blob, url))}
+                    onClear={() => setSelfieDoc(null)}
+                  />
                 </div>
               )}
 
